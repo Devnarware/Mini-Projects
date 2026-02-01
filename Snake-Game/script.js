@@ -1,23 +1,23 @@
 const board = document.querySelector('.board');
-const startBtn = document.querySelector(".btn-start") ;
-const modal = document.querySelector(".modal") ;
-const startGame = document.querySelector(".start-game") ;
-const endGame = document.querySelector(".end-game") ;
-const restartBtn = document.querySelector(".btn-restart") ;
-const highScoreElement = document.querySelector("#High-Score") ;
-const scoreElement = document.querySelector("#Score") ;
-const timeElement = document.querySelector("#Time") ;
+const startBtn = document.querySelector(".btn-start");
+const modal = document.querySelector(".modal");
+const startGame = document.querySelector(".start-game");
+const endGame = document.querySelector(".end-game");
+const restartBtn = document.querySelector(".btn-restart");
+const highScoreElement = document.querySelector("#High-Score");
+const scoreElement = document.querySelector("#Score");
+const timeElement = document.querySelector("#Time");
 
 
-const height = 50; 
+const height = 50;
 const width = 50;
 
 
-let highScore = localStorage.getItem("highscore") || 0 ;
-let score = 0 ;
-let time = `00:00` ;
+let highScore = localStorage.getItem("highscore") || 0;
+let score = 0;
+let time = `00:00`;
 
-highScoreElement.innerText = highScore ;
+highScoreElement.innerText = highScore;
 
 let blocks = [];
 
@@ -25,7 +25,7 @@ let blocks = [];
 let cols = Math.floor(board.clientWidth / width);
 let rows = Math.floor(board.clientHeight / height);
 let intervalId = null;
-let timeIntervalId = null ;
+let timeIntervalId = null;
 
 
 
@@ -95,6 +95,30 @@ function render() {
         }
     }
 
+
+    // SELF COLLISION 
+    for (let i = 0; i < snake.length; i++) {
+        if (head.x === snake[i].x && head.y === snake[i].y) {
+
+
+            blocks[`${food.x}-${food.y}`].classList.remove("food");
+            snake.forEach(segment => {
+                blocks[`${segment.x}-${segment.y}`].classList.remove("fill")
+            })
+
+            startGame.style.display = "none";
+            endGame.style.display = "flex";
+            modal.style.display = "flex";
+
+            clearInterval(intervalId);
+            clearInterval(timeIntervalId);
+            return ;
+
+
+           
+        }
+    }
+
     // BOARD COLLISION LOGIC
     if (head.x < 0 || head.x >= rows || head.y < 0 || head.y >= cols) {
 
@@ -103,7 +127,7 @@ function render() {
         endGame.style.display = "flex";
         modal.style.display = "flex";
         clearInterval(intervalId);
-        clearInterval(timeIntervalId) ;
+        clearInterval(timeIntervalId);
 
     }
 
@@ -118,12 +142,12 @@ function render() {
         blocks[`${food.x}-${food.y}`].classList.add("food");
         snake.unshift(head);
 
-        score += 10 ;
-        scoreElement.innerText = score ;
+        score += 10;
+        scoreElement.innerText = score;
 
-        if(score>highScore){
-            highScore = score ;
-            localStorage.setItem("highscore" , highScore.toString())
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("highscore", highScore.toString())
             // highScoreElement.innerText = highScore ;
         }
 
@@ -171,17 +195,17 @@ startBtn.addEventListener("click", function () {
     modal.style.display = "none";
 
     timeIntervalId = setInterval(() => {
-        
-        let [min , sec] = time.split(":").map(Number) ;
 
-        if(sec == 59){
-            min += 1 ;
-            sec = 0 ;
-        }else{
-            sec += 1 ;
+        let [min, sec] = time.split(":").map(Number);
+
+        if (sec == 59) {
+            min += 1;
+            sec = 0;
+        } else {
+            sec += 1;
         }
-        time = `${min}:${sec}`  ;
-        timeElement.innerText = time ;
+        time = `${min}:${sec}`;
+        timeElement.innerText = time;
 
     }, 1000);
     intervalId = setInterval(() => {
@@ -207,21 +231,24 @@ restartBtn.addEventListener("click", function () {
     ];
     blocks[`${food.x}-${food.y}`].classList.remove("food");
     food = {
-            x: Math.floor(Math.random() * rows),
-            y: Math.floor(Math.random() * cols)
-        };
+        x: Math.floor(Math.random() * rows),
+        y: Math.floor(Math.random() * cols)
+    };
 
-        highScoreElement.innerText = highScore ;
-        score = 0 ;
-        time = `00:00` ;  
-        scoreElement.innerText = score ;
-        timeElement.innerText = time ;
-        highScoreElement.innerText = highScore ;
+    highScoreElement.innerText = highScore;
+    score = 0;
+    time = `00:00`;
+    scoreElement.innerText = score;
+    timeElement.innerText = time;
+    highScoreElement.innerText = highScore;
 
     intervalId = setInterval(() => {
         render();
     }, 300)
 })
+
+
+
 
 
 
